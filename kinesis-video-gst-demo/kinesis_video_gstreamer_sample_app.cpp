@@ -30,12 +30,12 @@ LOGGER_TAG("com.amazonaws.kinesis.video.gstreamer");
 #define SESSION_TOKEN_ENV_VAR "AWS_SESSION_TOKEN"
 #define DEFAULT_REGION_ENV_VAR "AWS_DEFAULT_REGION"
 
-#define DEFAULT_RETENTION_PERIOD_HOURS 2
+#define DEFAULT_RETENTION_PERIOD_HOURS "DEFAULT_RETENTION_PERIOD_HOURS"
 #define DEFAULT_KMS_KEY_ID ""
 #define DEFAULT_STREAMING_TYPE STREAMING_TYPE_REALTIME
 #define DEFAULT_CONTENT_TYPE "video/h264"
-#define DEFAULT_MAX_LATENCY_SECONDS 60
-#define DEFAULT_FRAGMENT_DURATION_MILLISECONDS 2000
+#define DEFAULT_MAX_LATENCY_SECONDS "DEFAULT_MAX_LATENCY_SECONDS"
+#define DEFAULT_FRAGMENT_DURATION_MILLISECONDS "DEFAULT_FRAGMENT_DURATION_MILLISECONDS"
 #define DEFAULT_TIMECODE_SCALE_MILLISECONDS 1
 #define DEFAULT_KEY_FRAME_FRAGMENTATION TRUE
 #define DEFAULT_FRAME_TIMECODES TRUE
@@ -43,9 +43,9 @@ LOGGER_TAG("com.amazonaws.kinesis.video.gstreamer");
 #define DEFAULT_FRAGMENT_ACKS TRUE
 #define DEFAULT_RESTART_ON_ERROR TRUE
 #define DEFAULT_RECALCULATE_METRICS TRUE
-#define DEFAULT_STREAM_FRAMERATE 25
+#define DEFAULT_STREAM_FRAMERATE "DEFAULT_STREAM_FRAMERATE"
 #define DEFAULT_AVG_BANDWIDTH_BPS (4 * 1024 * 1024)
-#define DEFAULT_BUFFER_DURATION_SECONDS 120
+#define DEFAULT_BUFFER_DURATION_SECONDS "DEFAULT_BUFFER_DURATION_SECONDS"
 #define DEFAULT_REPLAY_DURATION_SECONDS 40
 #define DEFAULT_CONNECTION_STALENESS_SECONDS 60
 #define DEFAULT_CODEC_ID "V_MPEG4/ISO/AVC"
@@ -533,6 +533,18 @@ void kinesis_video_stream_init(CustomData *data) {
     char tag_val[MAX_TAG_VALUE_LEN];
     SPRINTF(tag_name, "piTag");
     SPRINTF(tag_val, "piValue");
+    char const *a;
+    char const *b;
+    char const *c;
+    char const *d;
+    char const *e;
+    int a1;
+    int b1;
+    int c1;
+    int d1;
+    int e1;
+    LOG_INFO("In kinesis vedio stream init ");
+
 
     STREAMING_TYPE streaming_type = DEFAULT_STREAMING_TYPE;
     bool use_absolute_fragment_times = DEFAULT_ABSOLUTE_FRAGMENT_TIMES;
@@ -542,14 +554,29 @@ void kinesis_video_stream_init(CustomData *data) {
         use_absolute_fragment_times = true;
     }
 
+    a = getenv(DEFAULT_RETENTION_PERIOD_HOURS);
+    b = getenv(DEFAULT_MAX_LATENCY_SECONDS);
+    c = getenv(DEFAULT_FRAGMENT_DURATION_MILLISECONDS);
+    d = getenv(DEFAULT_STREAM_FRAMERATE);
+    e = getenv(DEFAULT_BUFFER_DURATION_SECONDS);
+
+    a1 = atoi(a);
+    b1 = atoi(b);
+    c1 = atoi(c);
+    d1 = atoi(d);
+    e1 = atoi(e);
+
+    LOG_DEBUG("Streaming with live source and DEFAULT_RETENTION_PERIOD_HOURS: " << a1 << ", DEFAULT_MAX_LATENCY_SECONDS: " << b1 << ", DEFAULT_FRAGMENT_DURATION_MILLISECONDS: " << c1 << ", DEFAULT_STREAM_FRAMERATE" << d1);
+
+
     auto stream_definition = make_unique<StreamDefinition>(data->stream_name,
-                                                           hours(DEFAULT_RETENTION_PERIOD_HOURS),
+                                                           hours(a1),
                                                            &tags,
                                                            DEFAULT_KMS_KEY_ID,
                                                            streaming_type,
                                                            DEFAULT_CONTENT_TYPE,
-                                                           duration_cast<milliseconds> (seconds(DEFAULT_MAX_LATENCY_SECONDS)),
-                                                           milliseconds(DEFAULT_FRAGMENT_DURATION_MILLISECONDS),
+                                                           duration_cast<milliseconds> (seconds(b1)),
+                                                           milliseconds(c1),
                                                            milliseconds(DEFAULT_TIMECODE_SCALE_MILLISECONDS),
                                                            DEFAULT_KEY_FRAME_FRAGMENTATION,
                                                            DEFAULT_FRAME_TIMECODES,
@@ -558,9 +585,9 @@ void kinesis_video_stream_init(CustomData *data) {
                                                            DEFAULT_RESTART_ON_ERROR,
                                                            DEFAULT_RECALCULATE_METRICS,
                                                            0,
-                                                           DEFAULT_STREAM_FRAMERATE,
+                                                           d1,
                                                            DEFAULT_AVG_BANDWIDTH_BPS,
-                                                           seconds(DEFAULT_BUFFER_DURATION_SECONDS),
+                                                           seconds(e1),
                                                            seconds(DEFAULT_REPLAY_DURATION_SECONDS),
                                                            seconds(DEFAULT_CONNECTION_STALENESS_SECONDS),
                                                            DEFAULT_CODEC_ID,
