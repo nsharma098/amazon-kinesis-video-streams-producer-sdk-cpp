@@ -1,4 +1,9 @@
 ---
 label: ok
 hide_body: false
-fields: []
+fields:
+- name: sdaf
+  type: text
+  config:
+    required: false
+  label: sdaf
